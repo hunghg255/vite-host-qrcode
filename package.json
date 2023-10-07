@@ -1,0 +1,92 @@
+{
+  "name": "vite-host-qrcode",
+  "type": "module",
+  "version": "0.0.2",
+  "packageManager": "pnpm@8.6.12",
+  "description": "",
+  "license": "MIT",
+  "homepage": "https://github.com/hunghg255/vite-start-qrcode#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunghg255/vite-start-qrcode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hunghg255/vite-start-qrcode/issues"
+  },
+  "keywords": [
+    "unplugin",
+    "vite",
+    "webpack",
+    "rollup",
+    "transform"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js",
+      "require": "./dist/vite.cjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./*": "./*"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch src",
+    "build:fix": "esno scripts/postbuild.ts",
+    "lint": "eslint .",
+    "play": "npm -C playground run dev",
+    "prepublishOnly": "npm run build",
+    "release": "bumpp && npm publish",
+    "start": "esno src/index.ts",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "vite": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "hqr": "^0.0.1",
+    "unplugin": "^1.5.0"
+  },
+  "devDependencies": {
+    "@hunghg255/eslint-config": "^0.40.2",
+    "@types/node": "^20.5.2",
+    "bumpp": "^9.2.0",
+    "chalk": "^5.3.0",
+    "eslint": "^8.47.0",
+    "esno": "^0.17.0",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.1",
+    "tsup": "^7.2.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.2"
+  }
+}

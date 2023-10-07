@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.4.9",
+    "vite-plugin-inspect": "^0.7.38"
+  }
+}
