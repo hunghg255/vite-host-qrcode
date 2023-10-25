@@ -1,10 +1,16 @@
-import { defineConfig } from 'vite'
-import Inspect from 'vite-plugin-inspect'
-import HostQrCode from '../src/vite'
+import { defineConfig } from 'vite';
+import HostQrCode from '../src/vite';
 
 export default defineConfig({
   plugins: [
-    Inspect(),
-    HostQrCode(),
+    HostQrCode({
+      info: [
+        ({ bold, cyan, green }) => {
+          return {
+            text: `  ${green('➜')}  ${bold('Font Icon:')} ${bold(cyan('http://localhost:3000'))}`,
+          }
+        }
+      ]
+    }),
   ],
-})
+});

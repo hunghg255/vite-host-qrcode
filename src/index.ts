@@ -2,13 +2,12 @@ import type { UnpluginFactory } from 'unplugin'
 import { createUnplugin } from 'unplugin'
 import type { PreviewServerForHook, ViteDevServer } from 'vite'
 import { renderUnicodeCompact } from 'hqr'
-import type { Options } from './types'
+import * as korlorist from 'kolorist'
+import boxen from 'boxen'
 
-function cyan(str: string): string {
-  return `\x1B[36m${str}\x1B[0m`
-}
+import type { MessageValue, Options } from './types'
 
-function logQrcode(server: ViteDevServer | PreviewServerForHook, options?: Options) {
+function printQrcode(server: ViteDevServer | PreviewServerForHook, options?: Options) {
   let networkUrls = server.resolvedUrls?.network
 
   if (!networkUrls)
@@ -20,49 +19,70 @@ function logQrcode(server: ViteDevServer | PreviewServerForHook, options?: Optio
   if (networkUrls.length === 0)
     return
 
-  const info = server.config.logger.info
-
-  info(`\n  ${cyan('Visit page on mobile:')}\n`)
-
   for (const url of networkUrls) {
     const r = renderUnicodeCompact(url, {
       ecc: 'L',
       border: 1,
     })
 
-    info(`  ${r.replace(/\n/g, '\n  ')}`)
+    printWithBoxen({
+      text: `  ${r.replace(/\n/g, '\n  ')}`,
+      title: korlorist.bold('Visit page on mobile'),
+      padding: 1,
+      margin: 1,
+      borderStyle: 'round',
+    })
   }
-  info('\n')
+}
+
+function log(msg: string | void) {
+  if (!msg)
+    return
+  console.log(msg)
+}
+
+async function printWithBoxen(res: MessageValue) {
+  res.borderStyle = res.borderStyle || 'none'
+  log(boxen(res.text, res))
+}
+
+export async function print(info: Options['info']) {
+  if (!info) return;
+
+  for (const message of info) {
+    if (typeof message === 'function') {
+      const res = await message(korlorist)
+      if (typeof res === 'object')
+        printWithBoxen(res)
+
+      else log(res)
+    }
+    else if (typeof message === 'object') {
+      printWithBoxen(message)
+    }
+    else {
+      log(message)
+    }
+  }
 }
 
 export const unpluginFactory: UnpluginFactory<Options | undefined> = options => ({
   name: 'vite-host-qrcode',
   apply: 'serve',
   configureServer(server: any) {
-    const _listen = server.listen
-    server.listen = function () {
-      // eslint-disable-next-line prefer-rest-params
-      const isRestart = arguments[1] === true
-      // console.log(server)
-      const info = server.config.logger.info
-
-      info('\n  Visit page on mobile:')
-      if (!isRestart) {
-        server.httpServer?.on('listening', () => {
-          setTimeout(() => logQrcode(server, options), 0)
-        })
-      }
-      // eslint-disable-next-line prefer-rest-params
-      return _listen.apply(this, arguments)
+    const _printUrls = server.printUrls
+    server.printUrls = async () => {
+      await _printUrls();
+      await print(options?.info)
+      printQrcode(server, options)
     }
   },
   configurePreviewServer(server: any) {
-    // Preview server has no restarts, so we can hook directly
-    // The `resolvedUrls` only exist in Vite >=4.3.0, so add a guard to prevent unnecessary hook
-    if ('resolvedUrls' in server) {
-      server.httpServer?.on('listening', () => {
-        setTimeout(() => logQrcode(server, options), 0)
-      })
+    const _printUrls = server.printUrls
+    server.printUrls = async () => {
+      await _printUrls();
+      await print(options?.info)
+      printQrcode(server, options)
     }
   },
 })
