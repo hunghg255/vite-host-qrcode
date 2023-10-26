@@ -35,7 +35,7 @@ Example: [`playground/`](./playground/)
 
 <br></details>
 
-<img height="360" alt="CLI output" src="https://user-images.githubusercontent.com/34116392/181014171-aa511838-8122-48cf-ad9c-39f0368ee616.png" />
+<img height="360" alt="CLI output" src="https://cdn.jsdelivr.net/gh/hunghg255/vite-host-qrcode/public/demo.png" />
 
 
 ## Options
